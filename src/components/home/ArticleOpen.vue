@@ -1,6 +1,6 @@
 <template>
     <div class="main gotop">
-        <el-button type="info" size="small" autocomplete="off" @click="$router.go(-1)">返回</el-button>
+        <el-button type="info" size="small" autocomplete="off" @click="watchgood()">返回</el-button>
         <!--文章-->
         <div style="margin: 10px 0">
             <h2>{{articleopen.arttitle}}</h2>
@@ -21,6 +21,12 @@
                     :ishljs="true"
                     style="width:820px"
             />
+        </div>
+        <div style="margin:18px 0px;height: 22px;line-height: 22px">
+            已获点赞数&nbsp;{{articleopen.artgood}}&nbsp;&nbsp;喜欢就点个赞吧=>
+            <span v-show="showIcon"><i @click="good()" class="el-icon-star-off" style="font-size: 20px"/></span>
+            <span v-show="!showIcon"><i @click="nogood()" class="el-icon-star-off" style="color: #F56C6C;font-size: 20px"/></span>
+            <span style="box-sizing: inherit;float: right;">浏览数<i class="el-icon-view" style="margin: 0px 6px;"/>{{articleopen.artwatch}}</span>
         </div>
 
         <!--添加评论-->
@@ -103,9 +109,18 @@
                 },
                 coms:{},
                 mine:JSON.parse(localStorage.getItem("mine")),
-                ncom:true
+                ncom:true,
+                showIcon:true,
             }
         },
+        // watch:{
+        //     $route: {
+        //         immediate: true, // 一旦监听到路由的变化立即执行
+        //         handler(to, from) {
+        //             console.log("监听路由：" + to.name);
+        //         },
+        //     },
+        // },
         created(){
             this.load()
             this.comload()
@@ -120,7 +135,7 @@
             },
             comload(){
                 this.request.get("/comment/"+this.artnum).then(res=>{
-                    console.log("aaaaaaa"+res.data)
+                    // console.log("aaaaaaa"+res.data)
                     this.coms = res.data
                     if(Object.keys(res.data).length !==0){
                         this.ncom=false
@@ -145,7 +160,22 @@
                 // console.log(res+"这里是返回值")
                 this.com.comphoto = res;
                 console.log(this.com.comphoto)
+            },
+            good(){
+                this.articleopen.artgood +=1;
+                this.$message.success("LIKE +1");
+                this.showIcon=!this.showIcon;
+            },
+            nogood(){
+                this.articleopen.artgood -=1;
+                this.showIcon=!this.showIcon;
+            },
+            watchgood(){
+                console.log("aaaaaaaaaaaa");
+                this.request.post("/article/watchgood",this.articleopen)
+                this.$router.go(-1)
             }
+
         }
     }
 </script>

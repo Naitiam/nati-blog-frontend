@@ -24,13 +24,13 @@
                 </el-table-column>
                 <el-table-column fixed="right" label="操作" width="200">
                     <template slot-scope="scope" >
-                        <el-button style="margin-right: 5px" @click="handleEdit(scope.row)">回复</el-button>
+                        <el-button style="margin-right: 5px" @click="handleReply(scope.row)">回复</el-button>
                         <el-popconfirm
                                 confirm-button-type='确定'
                                 cancel-button-type='取消'
                                 hide-icon
                                 title="确定删除这篇文章吗？"
-                                @confirm="handleDelete(scope.row.artnum)"
+                                @confirm="handleDelete(scope.row.comnum)"
                         >
                             <el-button type="danger" slot="reference">删除</el-button>
                         </el-popconfirm>
@@ -50,12 +50,12 @@
             </el-pagination>
         </div>
         <el-dialog title="评论回复" :visible.sync="dialogVisible" width="40%" top="15%">
-            <el-form :model="reply"  label-width="80px">
+            <el-form :model="comment"  label-width="80px">
                 <el-form-item label="回复内容">
-                    <el-input type="textarea" v-model="reply.comreply" style="width: 300px;"></el-input>
+                    <el-input type="textarea" v-model="comment.comreply" style="width: 300px;"></el-input>
                 </el-form-item>
                 <el-form-item>
-                    <el-button type="primary" @click="submitArticle">提交回复</el-button>
+                    <el-button type="primary" @click="submitReply">提交回复</el-button>
                 </el-form-item>
             </el-form>
         </el-dialog>
@@ -72,6 +72,7 @@
                 pageNum: 1,
                 pageSize: 8,
                 dialogVisible: false,
+                comment:{},
                 reply:{
                     comreply:"a"
                 }
@@ -87,8 +88,7 @@
                         pageNum: this.pageNum,
                         pageSize: this.pageSize
                     }
-
-                }).then(res=>{
+                }).then(res => {
                     this.tableData = res.records
                     this.total = res.total
                     console.log(res.records)
@@ -104,6 +104,31 @@
                 this.pageNum = pageNum
                 this.load()
             },
+            handleReply(row){
+                this.comment = row
+                this.dialogVisible = true;
+            },
+            submitReply(){
+                this.request.post("/comment/reply",this.comment).then(res=>{
+                    if(res){
+                        this.$message.success("回复成功");
+                        this.dialogVisible = false
+                        this.load()
+                    }else{
+                        this.$message.error("回复失败");
+                    }
+                })
+            },
+            handleDelete(comnum) {
+                this.request.delete("/comment/" + comnum).then(res => {
+                    if (res) {
+                        this.$message.success("删除成功");
+                        this.load()
+                    } else {
+                        this.$message.error("删除失败");
+                    }
+                })
+            }
         }
     }
 </script>
