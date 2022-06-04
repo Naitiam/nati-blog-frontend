@@ -1,3 +1,5 @@
+毕设练手项目,第一次编写前后端分离项目
+还需系统学习vue框架
 ## 前台界面
 ![image](https://user-images.githubusercontent.com/71304537/172017518-c7f52609-8ead-494b-9ff6-121d51263f8f.png)
 ![image](https://user-images.githubusercontent.com/71304537/172017563-5787861f-0505-42b4-ab86-ad2258c2cc53.png)
